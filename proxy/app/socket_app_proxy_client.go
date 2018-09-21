@@ -6,8 +6,8 @@ import (
 	"net/rpc/jsonrpc"
 	"time"
 
-	"github.com/babbleio/babble/hashgraph"
-	bp "github.com/babbleio/babble/proxy/babble"
+	"github.com/mosaicnetworks/babble/hashgraph"
+	bp "github.com/mosaicnetworks/babble/proxy/babble"
 	"github.com/sirupsen/logrus"
 )
 
@@ -48,4 +48,37 @@ func (p *SocketAppProxyClient) CommitBlock(block hashgraph.Block) ([]byte, error
 	}).Debug("AppProxyClient.CommitBlock")
 
 	return stateHash.Hash, err
+}
+
+func (p *SocketAppProxyClient) GetSnapshot(blockIndex int) ([]byte, error) {
+	rpcConn, err := p.getConnection()
+	if err != nil {
+		return nil, err
+	}
+
+	var snapshot bp.Snapshot
+	err = rpcConn.Call("State.GetSnapshot", blockIndex, &snapshot)
+
+	p.logger.WithFields(logrus.Fields{
+		"block":    blockIndex,
+		"snapshot": snapshot.Bytes,
+	}).Debug("AppProxyClient.GetSnapshot")
+
+	return snapshot.Bytes, err
+}
+
+func (p *SocketAppProxyClient) Restore(snapshot []byte) error {
+	rpcConn, err := p.getConnection()
+	if err != nil {
+		return err
+	}
+
+	var stateHash bp.StateHash
+	err = rpcConn.Call("State.Restore", snapshot, &stateHash)
+
+	p.logger.WithFields(logrus.Fields{
+		"state_hash": stateHash.Hash,
+	}).Debug("AppProxyClient.Restore")
+
+	return err
 }

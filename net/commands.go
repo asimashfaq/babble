@@ -1,6 +1,6 @@
 package net
 
-import "github.com/babbleio/babble/hashgraph"
+import "github.com/mosaicnetworks/babble/hashgraph"
 
 type SyncRequest struct {
 	FromID int
@@ -24,4 +24,17 @@ type EagerSyncRequest struct {
 type EagerSyncResponse struct {
 	FromID  int
 	Success bool
+}
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+type FastForwardRequest struct {
+	FromID int
+}
+
+type FastForwardResponse struct {
+	FromID   int
+	Block    hashgraph.Block
+	Frame    hashgraph.Frame
+	Snapshot []byte
 }

@@ -3,7 +3,7 @@ package app
 import (
 	"time"
 
-	"github.com/babbleio/babble/hashgraph"
+	"github.com/mosaicnetworks/babble/hashgraph"
 	"github.com/sirupsen/logrus"
 )
 
@@ -47,4 +47,12 @@ func (p *SocketAppProxy) SubmitCh() chan []byte {
 
 func (p *SocketAppProxy) CommitBlock(block hashgraph.Block) ([]byte, error) {
 	return p.client.CommitBlock(block)
+}
+
+func (p *SocketAppProxy) GetSnapshot(blockIndex int) ([]byte, error) {
+	return p.client.GetSnapshot(blockIndex)
+}
+
+func (p *SocketAppProxy) Restore(snapshot []byte) error {
+	return p.client.Restore(snapshot)
 }
